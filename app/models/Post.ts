@@ -32,7 +32,7 @@ export default class Post {
       const snapShot = await db.collection(this.path).get();
 
       snapShot.forEach((doc) => {
-        result.push(doc.data() as Post);
+        result.push({ id: doc.id, ...(doc.data() as Post) });
       });
 
       return result;

@@ -8,9 +8,13 @@ export default class PostController extends BaseController {
 
   constructor() {
     super();
+    this.initializeRoutes();
   }
 
-  public initializeRoutes = () => {};
+  public initializeRoutes = () => {
+    this.router.get("/", this.get);
+    this.router.post("/", this.create);
+  };
 
   public async get(req: Request, res: Response) {
     try {
