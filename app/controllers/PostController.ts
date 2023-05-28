@@ -14,6 +14,8 @@ export default class PostController extends BaseController {
   public initializeRoutes = () => {
     this.router.get("/", this.get);
     this.router.post("/", this.create);
+    this.router.get("/:id", this.getById);
+    this.router.put("/:id", this.update);
     this.router.post("/:id/comment", this.comment);
   };
 
@@ -32,6 +34,26 @@ export default class PostController extends BaseController {
       const post = await Post.create(req.body);
 
       return res.json(post);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  public async getById(req: Request, res: Response) {
+    try {
+      const post = await Post.findById(req.params.id);
+
+      return res.json(post);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  public async update(req: Request, res: Response) {
+    try {
+      await Post.update(req.params.id, req.body);
+
+      return res.json("success");
     } catch (e) {
       console.log(e);
     }
