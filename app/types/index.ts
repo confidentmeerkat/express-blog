@@ -6,3 +6,8 @@ export abstract class BaseController {
 
   abstract initializeRoutes: () => void;
 }
+
+export type Comment = {
+  content: string;
+  commenter: string;
+};

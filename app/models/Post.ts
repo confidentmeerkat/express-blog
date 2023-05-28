@@ -1,4 +1,5 @@
 import { db } from "../firebase";
+import { Comment } from "../types";
 
 export default class Post {
   private static path = "posts";
@@ -8,7 +9,7 @@ export default class Post {
   public content: string;
   public author: string;
   public coAuthors?: string[];
-  public comments?: string[];
+  public comments?: Comment[];
 
   constructor(post: Post) {
     this.title = post.title;
@@ -32,10 +33,43 @@ export default class Post {
       const snapShot = await db.collection(this.path).get();
 
       snapShot.forEach((doc) => {
-        result.push({ id: doc.id, ...(doc.data() as Post) });
+        result.push({ id: doc.id, ...(doc.data() as any) });
       });
 
       return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  public static async findById(id: string) {
+    try {
+      const result = await db.collection(this.path).doc(id).get();
+
+      return result.data() as Post;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  public static async update(id: string, updates: Partial<Post>) {
+    try {
+      const res = await db.collection("cities").doc(id).update(updates);
+
+      return res;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  public static async addComment(id: string, comment: Comment) {
+    try {
+      const post = await Post.findById(id);
+
+      const res = await db
+        .collection("posts")
+        .doc(id)
+        .update({ comments: [...(post?.comments || []), comment] });
     } catch (e) {
       console.log(e);
     }
