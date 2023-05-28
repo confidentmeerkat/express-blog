@@ -28,7 +28,7 @@ export default class User {
       const snapShot = await db.collection(this.path).get();
 
       snapShot.forEach((doc) => {
-        result.push(doc.data() as User);
+        result.push({ id: doc.id, ...(doc.data() as User) });
       });
 
       return result;
