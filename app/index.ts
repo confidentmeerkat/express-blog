@@ -7,13 +7,14 @@ export default class App {
 
   constructor(controllers: BaseController[], port: number) {
     this.app = express();
+    this.app.use(express.json());
     this.initializeControllers(controllers);
     this.port = port;
   }
 
   private initializeControllers(controllers: BaseController[]) {
     controllers.forEach((controller) => {
-      this.app.use("/", controller.router);
+      this.app.use(controller.path, controller.router);
     });
   }
 
