@@ -17,6 +17,7 @@ export default class PostController extends BaseController {
     this.router.get("/:id", this.getById);
     this.router.put("/:id", this.update);
     this.router.post("/:id/comment", this.comment);
+    this.router.post("/:id/like", this.like);
   };
 
   public async get(req: Request, res: Response) {
@@ -44,7 +45,7 @@ export default class PostController extends BaseController {
       const id = req.params.id;
 
       const post = await Post.findById(id);
-      Post.update(id, { views: (post?.views || 0) + 1 });
+      await Post.update(id, { views: (post?.views || 0) + 1 });
 
       return res.json(post);
     } catch (e) {
@@ -64,9 +65,26 @@ export default class PostController extends BaseController {
 
   public async comment(req: Request, res: Response) {
     try {
-      const postId = req.params.id;
+      const id = req.params.id;
 
-      const post = await Post.addComment(postId, req.body);
+      await Post.addComment(id, req.body);
+
+      return res.json("success");
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  public async like(req: Request, res: Response) {
+    try {
+      const id = req.params.id;
+      const post = await Post.findById(id);
+      const user = req.body.user;
+
+      if (post?.likes.includes(user)) {
+        await Post.update(id, { likes: post.likes.filter((liked) => liked === user) });
+      }
+      await Post.update(id, { likes: [...(post?.likes || []), user] });
 
       return res.json("success");
     } catch (e) {
