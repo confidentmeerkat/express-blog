@@ -41,7 +41,10 @@ export default class PostController extends BaseController {
 
   public async getById(req: Request, res: Response) {
     try {
-      const post = await Post.findById(req.params.id);
+      const id = req.params.id;
+
+      const post = await Post.findById(id);
+      Post.update(id, { views: (post?.views || 0) + 1 });
 
       return res.json(post);
     } catch (e) {

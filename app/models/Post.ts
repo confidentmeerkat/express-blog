@@ -10,6 +10,8 @@ export default class Post {
   public author: string;
   public coAuthors?: string[];
   public comments?: Comment[];
+  public likes: string[] = [];
+  public views: number = 0;
 
   constructor(post: Post) {
     this.title = post.title;
