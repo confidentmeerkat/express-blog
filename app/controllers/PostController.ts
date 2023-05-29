@@ -1,4 +1,6 @@
 import express, { Response, Request } from "express";
+import { Request as JWTRequest } from "express-jwt";
+import jwtAuth from "../middlewares.ts/jwtAuth";
 import { BaseController } from "../types";
 import Post from "../models/Post";
 
@@ -13,11 +15,11 @@ export default class PostController extends BaseController {
 
   public initializeRoutes = () => {
     this.router.get("/", this.get);
-    this.router.post("/", this.create);
+    this.router.post("/", jwtAuth, this.create);
     this.router.get("/:id", this.getById);
-    this.router.put("/:id", this.update);
-    this.router.post("/:id/comment", this.comment);
-    this.router.post("/:id/like", this.like);
+    this.router.put("/:id", jwtAuth, this.update);
+    this.router.post("/:id/comment", jwtAuth, this.comment);
+    this.router.post("/:id/like", jwtAuth, this.like);
   };
 
   public async get(req: Request, res: Response) {
@@ -27,16 +29,19 @@ export default class PostController extends BaseController {
       return res.json(posts || []);
     } catch (e) {
       console.log(e);
+      return res.status(500);
     }
   }
 
-  public async create(req: Request, res: Response) {
+  public async create(req: JWTRequest, res: Response) {
     try {
-      const post = await Post.create(req.body);
+      const userId = req!.auth!.id;
+      const post = await Post.create({ ...req.body, author: userId });
 
       return res.json(post);
     } catch (e) {
       console.log(e);
+      return res.status(500);
     }
   }
 
@@ -50,36 +55,48 @@ export default class PostController extends BaseController {
       return res.json(post);
     } catch (e) {
       console.log(e);
+      return res.status(500);
     }
   }
 
-  public async update(req: Request, res: Response) {
+  public async update(req: JWTRequest, res: Response) {
     try {
+      const id = req.params.id;
+
+      const post = await Post.findById(id);
+
+      if (post?.author !== req.auth!.id) {
+        return res.status(403);
+      }
+
       await Post.update(req.params.id, req.body);
 
       return res.json("success");
     } catch (e) {
       console.log(e);
+      return res.status(500);
     }
   }
 
-  public async comment(req: Request, res: Response) {
+  public async comment(req: JWTRequest, res: Response) {
     try {
       const id = req.params.id;
+      const user = req!.auth!.id;
 
-      await Post.addComment(id, req.body);
+      await Post.addComment(id, { ...req.body, commenter: user });
 
       return res.json("success");
     } catch (e) {
       console.log(e);
+      return res.status(500);
     }
   }
 
-  public async like(req: Request, res: Response) {
+  public async like(req: JWTRequest, res: Response) {
     try {
       const id = req.params.id;
       const post = await Post.findById(id);
-      const user = req.body.user;
+      const user = req.auth!.id;
 
       if (post?.likes.includes(user)) {
         await Post.update(id, { likes: post.likes.filter((liked) => liked === user) });
@@ -89,6 +106,7 @@ export default class PostController extends BaseController {
       return res.json("success");
     } catch (e) {
       console.log(e);
+      return res.status(500);
     }
   }
 }
