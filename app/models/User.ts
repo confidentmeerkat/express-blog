@@ -6,11 +6,14 @@ export default class User {
   public id?: string;
   public name: string;
   public email: string;
+  public password?: string;
 
   constructor(name: string, email: string) {
     this.name = name;
     this.email = email;
   }
+
+  public static collection = db.collection(this.path);
 
   public static async create(user: User) {
     try {
@@ -18,7 +21,7 @@ export default class User {
 
       return ref;
     } catch (e) {
-      console.log(e);
+      throw e;
     }
   }
 
