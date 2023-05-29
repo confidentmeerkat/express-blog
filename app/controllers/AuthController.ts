@@ -20,10 +20,13 @@ export default class AuthController extends BaseController {
 
   public async register(req: Request, res: Response) {
     try {
-      const { password } = req.body;
+      const { password, name, email } = req.body;
 
       if (!password) {
         return res.status(400).json({ message: "Password is required" });
+      }
+      if (!name && !email) {
+        return res.status(400).json({ message: "Name and email are required" });
       }
 
       const hashed = await bcrypt.hash(password, 10);

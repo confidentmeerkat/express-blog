@@ -35,8 +35,14 @@ export default class PostController extends BaseController {
 
   public async create(req: JWTRequest, res: Response) {
     try {
+      const { title, content, coAuthors }: { title: string; content: string; coAuthors: string[] } = req.body;
+
+      if (!title && title.trim() && content && content.trim()) {
+        return res.status(400).json({ message: "Title and Content is required." });
+      }
+
       const userId = req!.auth!.id;
-      const post = await Post.create({ ...req.body, author: userId, views: 0, likes: [] });
+      const post = await Post.create({ title, content, author: userId, views: 0, likes: [] });
 
       return res.json(post);
     } catch (e) {
