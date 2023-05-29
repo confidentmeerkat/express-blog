@@ -13,6 +13,8 @@
 
 
 ## Endpoints
+- POST: `/auth/register` Register a new user
+- POST: `/auth/login` Login a user
 - GET: `/users` Get list of users
 - POST `/users` Create a new user
 - GET: `/posts` Get list of posts
