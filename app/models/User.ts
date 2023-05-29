@@ -42,15 +42,19 @@ export default class User {
     }
   }
 
-  public static async findById(id: string) {
+  public static async findById(id: string, options: { relations: boolean } = { relations: true }) {
     try {
       const result = await db.collection(this.path).doc(id).get();
 
-      const postSnapshot = await Post.collection.where("author", "==", id).get();
-      const posts: Post[] = [];
-      postSnapshot.forEach((doc) => posts.push({ id: doc.id, ...(doc.data() as Post) }));
+      if (options?.relations) {
+        const postSnapshot = await Post.collection.where("author", "==", id).get();
+        const posts: Post[] = [];
+        postSnapshot.forEach((doc) => posts.push({ id: doc.id, ...(doc.data() as Post) }));
 
-      return { ...result.data(), posts } as User;
+        return { ...result.data(), posts } as User;
+      }
+
+      return result.data();
     } catch (e) {
       console.log(e);
     }

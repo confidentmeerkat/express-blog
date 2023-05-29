@@ -1,5 +1,6 @@
 import { db } from "../firebase";
 import { Comment } from "../types";
+import User from "./User";
 
 export default class Post {
   private static path = "posts";
@@ -49,7 +50,18 @@ export default class Post {
     try {
       const result = await this.collection.doc(id).get();
 
-      return result.data() as Post;
+      const post = result.data() as Post;
+
+      const authorId = post.author;
+      const author = await User.findById(authorId, { relations: false });
+
+      const coAuthorIds = post.coAuthors || [];
+      const coAuthors = [];
+      for (let coAuthorId of coAuthorIds) {
+        coAuthors.push(await User.findById(coAuthorId, { relations: false }));
+      }
+
+      return { ...post, author, coAuthors };
     } catch (e) {
       console.log(e);
     }
