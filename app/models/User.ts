@@ -39,6 +39,7 @@ export default class User {
       return result;
     } catch (e) {
       console.log(e);
+      throw e;
     }
   }
 
@@ -57,6 +58,7 @@ export default class User {
       return result.data();
     } catch (e) {
       console.log(e);
+      throw e;
     }
   }
 }

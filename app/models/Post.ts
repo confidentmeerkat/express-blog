@@ -28,6 +28,7 @@ export default class Post {
       return ref;
     } catch (e) {
       console.log(e);
+      throw e;
     }
   }
 
@@ -43,6 +44,7 @@ export default class Post {
       return result;
     } catch (e) {
       console.log(e);
+      throw e;
     }
   }
 
@@ -64,6 +66,7 @@ export default class Post {
       return { ...post, author, coAuthors };
     } catch (e) {
       console.log(e);
+      throw e;
     }
   }
 
@@ -74,6 +77,7 @@ export default class Post {
       return res;
     } catch (e) {
       console.log(e);
+      throw e;
     }
   }
 
@@ -87,6 +91,7 @@ export default class Post {
         .update({ comments: [...(post?.comments || []), comment] });
     } catch (e) {
       console.log(e);
+      throw e;
     }
   }
 }
