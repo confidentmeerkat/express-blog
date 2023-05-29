@@ -1,5 +1,10 @@
 # Express blog backend service.
 
+## Tech Stack
+- Express
+- TypeScript
+- FireStore
+
 ## How to run
 - Clone repository from https://github.com/confidentmeerkat/express-blog.git
 - Install node_modules `yarn install`
