@@ -36,7 +36,7 @@ export default class PostController extends BaseController {
   public async create(req: JWTRequest, res: Response) {
     try {
       const userId = req!.auth!.id;
-      const post = await Post.create({ ...req.body, author: userId });
+      const post = await Post.create({ ...req.body, author: userId, views: 0, likes: [] });
 
       return res.json(post);
     } catch (e) {
@@ -64,12 +64,13 @@ export default class PostController extends BaseController {
       const id = req.params.id;
 
       const post = await Post.findById(id);
+      const { views, likes, ...updates } = req.body;
 
       if (post?.author !== req.auth!.id) {
         return res.status(403);
       }
 
-      await Post.update(req.params.id, req.body);
+      await Post.update(req.params.id, updates);
 
       return res.json("success");
     } catch (e) {
