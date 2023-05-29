@@ -1,4 +1,5 @@
 import { db } from "../firebase";
+import Post from "./Post";
 
 export default class User {
   private static path = "users";
@@ -7,6 +8,7 @@ export default class User {
   public name: string;
   public email: string;
   public password?: string;
+  public posts?: Post[];
 
   constructor(name: string, email: string) {
     this.name = name;
@@ -35,6 +37,20 @@ export default class User {
       });
 
       return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  public static async findById(id: string) {
+    try {
+      const result = await db.collection(this.path).doc(id).get();
+
+      const postSnapshot = await Post.collection.where("author", "==", id).get();
+      const posts: Post[] = [];
+      postSnapshot.forEach((doc) => posts.push({ id: doc.id, ...(doc.data() as Post) }));
+
+      return { ...result.data(), posts } as User;
     } catch (e) {
       console.log(e);
     }

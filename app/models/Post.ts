@@ -3,6 +3,7 @@ import { Comment } from "../types";
 
 export default class Post {
   private static path = "posts";
+  public static collection = db.collection(this.path);
 
   public id?: string;
   public title: string;
@@ -21,7 +22,7 @@ export default class Post {
 
   public static async create(post: Post) {
     try {
-      const ref = await db.collection(this.path).add(post);
+      const ref = await this.collection.add(post);
 
       return ref;
     } catch (e) {
@@ -32,7 +33,7 @@ export default class Post {
   public static async find() {
     try {
       const result: Post[] = [];
-      const snapShot = await db.collection(this.path).get();
+      const snapShot = await this.collection.get();
 
       snapShot.forEach((doc) => {
         result.push({ id: doc.id, ...(doc.data() as any) });
@@ -46,7 +47,7 @@ export default class Post {
 
   public static async findById(id: string) {
     try {
-      const result = await db.collection(this.path).doc(id).get();
+      const result = await this.collection.doc(id).get();
 
       return result.data() as Post;
     } catch (e) {
