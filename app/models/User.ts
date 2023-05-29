@@ -28,7 +28,7 @@ export default class User {
   public static async find() {
     try {
       const result: User[] = [];
-      const snapShot = await db.collection(this.path).get();
+      const snapShot = await db.collection(this.path).select("name").get();
 
       snapShot.forEach((doc) => {
         result.push({ id: doc.id, ...(doc.data() as User) });

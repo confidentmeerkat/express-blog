@@ -13,7 +13,10 @@ export default class AuthController extends BaseController {
     this.initializeRoutes();
   }
 
-  public initializeRoutes = () => {};
+  public initializeRoutes = () => {
+    this.router.post("/login", this.login);
+    this.router.post("/register", this.register);
+  };
 
   public async register(req: Request, res: Response) {
     try {
@@ -23,7 +26,7 @@ export default class AuthController extends BaseController {
         return res.status(400).json({ message: "Password is required" });
       }
 
-      const hashed = bcrypt.hash(password, 10);
+      const hashed = await bcrypt.hash(password, 10);
 
       await User.create({ ...req.body, password: hashed });
 

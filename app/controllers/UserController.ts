@@ -13,7 +13,6 @@ export default class UserController extends BaseController {
 
   public initializeRoutes = () => {
     this.router.get("/", this.get);
-    this.router.post("/", this.create);
   };
 
   public async get(req: Request, res: Response) {
@@ -23,16 +22,7 @@ export default class UserController extends BaseController {
       return res.json(users || []);
     } catch (e) {
       console.log(e);
-    }
-  }
-
-  public async create(req: Request, res: Response) {
-    try {
-      const user = await User.create(req.body);
-
-      return res.json(user);
-    } catch (e) {
-      console.log(e);
+      return res.status(500);
     }
   }
 }
